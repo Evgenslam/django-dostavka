@@ -2,6 +2,7 @@ version: '3.9'
 
 services:
   app:
+    container_name: dostavka_app_local
     build: 
       context: .
     command: /scripts/run_local.sh
@@ -11,21 +12,24 @@ services:
       - ./app:/app
       - ./data/web:/vol/web
     environment:
-      - SECRET_KEY=${}
-      - DEBUG=1
-      - DB_HOST=${DB_HOST}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: 1
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
     depends_on:
       - db
+ 
   db:
+    container_name: dostavka_db_local
     image: postgres:latest
+    ports:
+      - 5433:5432
     environment:
-      - POSTGRES_DB=devdb
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASS}
-
-env_file:
-  - env.local
-  
+      POSTGRES_DB: devdb
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    
+ 
+    
