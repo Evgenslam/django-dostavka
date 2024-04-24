@@ -1,36 +1,26 @@
 FROM python:3.10-alpine
 
-# Set environment variables
+# set work directory
+WORKDIR /usr/src/app
+
+# set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-COPY ./requirements.txt /requirements.txt
-COPY ./app /app
-COPY ./scripts /scripts
+RUN pip install --upgrade pip
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
 
-WORKDIR /app
-EXPOSE 8000
+COPY ./scripts/run_local.sh ./scripts/run_local.sh
+RUN sed -i 's/\r$//g' /usr/src/app/scripts/run_local.sh
+RUN chmod +x /usr/src/app/scripts/run_local.sh
 
-RUN  python -m venv /py && \
-     /py/bin/pip install --upgrade pip && \
-     apk add --no-cache bash && \
-     apk add --update --no-cache postgresql-client && \
-     apk add --update --no-cache --virtual .tmp-deps \
-        build-base postgresql-dev musl-dev linux-headers && \
-     /py/bin/pip install -r /requirements.txt && \
-     apk del .tmp-deps && \
-     adduser --disabled-password --no-create-home app && \
-     mkdir -p /vol/web/static && \
-     mkdir -p /vol/web/media && \
-     chown -R app:app /vol && \
-     chmod -R 755 /vol  && \
-     chmod -R +x /scripts
+# copy project
+COPY ./app ./app
 
-ENV PATH="/scripts:/py/bin:$PATH"
+ENTRYPOINT [ "/usr/src/app/scripts/run_local.sh" ]
 
-USER app 
 
-CMD ["run.sh"]
 
 
    
