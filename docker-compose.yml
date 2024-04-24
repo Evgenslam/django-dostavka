@@ -2,10 +2,10 @@ version: '3.9'
 
 services:
   django: 
-    container_name: django
+    container_name: django_local
     image: dostavka_local
     build: .
-    command: python "app/manage.py" runserver 0.0.0.0:8000
+    command: gunicorn app.app.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./app/:/usr/src/app/app
     ports:
@@ -24,6 +24,8 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
       - POSTGRES_DB=${DB_NAME}
+
+  #nginx:
 
 volumes:
   postgres_data:

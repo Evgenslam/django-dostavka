@@ -11,6 +11,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
+# Altered from os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings') dut to docker container structure
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.app.settings')
 
 application = get_wsgi_application()
