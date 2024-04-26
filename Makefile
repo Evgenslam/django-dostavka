@@ -1,4 +1,4 @@
-.PHONY: help build up stop ports bash shell 
+.PHONY: help build up stop down ports bash shell 
 
 DOCKER_COMPOSE_FILE = docker-compose.local.yml
 
@@ -6,36 +6,32 @@ help:
 	@echo "Usage:"
 	@echo "  make build       # Build the whole project"
 	@echo "  make up          # Launch the project"
-	@echo "  make stop        # Stop the project"
+	@echo "  make stop        # Stop all containers"
+	@echo "  make down        # Remove all containers"
 	@echo "  make ports       # Show ports and running containers"
 	@echo "  make bash        # Access container of our app"
 	@echo "  make shell       # Access container of our app and launch shell"
-	@echo "  make list        # List running containers"
 
 build:
-	@docker-compose -f ${DOCKER_COMPOSE_FILE} build
+	@docker-compose build --no-cache
 
 up:
-	@docker-compose -f ${DOCKER_COMPOSE_FILE} up -d
-	
+	@docker-compose up -d
+
 stop:
-	@docker-compose -f ${DOCKER_COMPOSE_FILE} stop
+	@docker-compose stop
+
+down:
+	@docker-compose down 
 
 ports:
-	@docker-compose -f ${DOCKER_COMPOSE_FILE} ps -a --filter "status=running" 
+	@docker-compose ps -a --filter "status=running" 
 
 bash:
-	@docker-compose -f ${DOCKER_COMPOSE_FILE} exec app bash
+	@docker-compose exec backend bash
 
 shell:
-	@docker-compose -f ${DOCKER_COMPOSE_FILE} exec app sh
-
-debug:
-	@echo ${DOCKER_COMPOSE_FILE}
+	@docker-compose exec backend sh
 
 
-
-
-#TODO: в ридми, как напишешь мейкфайл, нужно описать процесс разворачивания проектав целом, там это будет "указать переменные в энв" и "make build; make up"
-#TODO: переписать nginx
 
