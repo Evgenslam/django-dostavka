@@ -13,5 +13,6 @@ fi
 
 python '/usr/src/app/manage.py' flush --no-input
 python '/usr/src/app/manage.py' migrate --no-input
+python '/usr/src/app/manage.py' collectstatic --no-input
 
 exec "$@"
