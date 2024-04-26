@@ -1,6 +1,7 @@
 .PHONY: help build up stop down ports bash shell 
 
 DOCKER_COMPOSE_FILE = docker-compose.local.yml
+DEFAULT_ENV_FILE = .env
 
 help:
 	@echo "Usage:"
@@ -16,7 +17,11 @@ build:
 	@docker-compose build --no-cache
 
 up:
-	@docker-compose up -d
+	@if [ -z "$(arg)" ]; then \
+		docker-compose --env-file $(DEFAULT_ENV_FILE) up -d; \
+	else \
+		docker-compose --env-file "$(arg)" up -d; \
+	fi
 
 stop:
 	@docker-compose stop
