@@ -1,20 +1,6 @@
 version: '3.9'
 
 services:
-  django: 
-    container_name: django_local
-    image: dostavka_local
-    build: .
-    command: gunicorn app.app.wsgi:application --bind 0.0.0.0:8000
-    volumes:
-      - ./app/:/usr/src/app/app
-    ports:
-      - 8000:8000
-    env_file:
-      - ./.env
-    depends_on:
-      - db
-  
   db:
     container_name: db_local
     image: postgres:latest
@@ -24,6 +10,22 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
       - POSTGRES_DB=${DB_NAME}
+
+  backend: 
+    container_name: backend_local
+    image: dostavka_local
+    build: .
+    #command: python 'app/manage.py' runserver
+    command: gunicorn app.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./app/:/usr/src/app/
+      - ./requirements.txt:/usr/src/requirements.txt
+    ports:
+      - "8001:8000"
+    env_file:
+      - ./.env
+    depends_on:
+      - db
 
   #nginx:
 
