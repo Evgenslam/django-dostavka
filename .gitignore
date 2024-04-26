@@ -121,6 +121,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env.dev
 .env.local
 .env.prod
 .venv
@@ -162,3 +163,8 @@ cython_debug/
 .idea/
 
 /data
+
+#Temporary
+docker-compose.local.yml
+docker-compose.prod.yml
+scripts/run.sh

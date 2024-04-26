@@ -1,36 +1,29 @@
 FROM python:3.10-alpine
 
-# Set environment variables
+# set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-COPY ./requirements.txt /requirements.txt
-COPY ./app /app
-COPY ./scripts /scripts
+# install dependencies
+RUN pip install --upgrade pip
+COPY ./requirements.txt usr/src/requirements.txt
+RUN pip install -r usr/src/requirements.txt
 
-WORKDIR /app
-EXPOSE 8000
+# copy script and prepare it to run
+COPY ./scripts/run_local.sh usr/src/scripts/run_local.sh
+RUN sed -i 's/\r$//g' /usr/src/scripts/run_local.sh
+RUN chmod +x /usr/src/scripts/run_local.sh
 
-RUN  python -m venv /py && \
-     /py/bin/pip install --upgrade pip && \
-     apk add --no-cache bash && \
-     apk add --update --no-cache postgresql-client && \
-     apk add --update --no-cache --virtual .tmp-deps \
-        build-base postgresql-dev musl-dev linux-headers && \
-     /py/bin/pip install -r /requirements.txt && \
-     apk del .tmp-deps && \
-     adduser --disabled-password --no-create-home app && \
-     mkdir -p /vol/web/static && \
-     mkdir -p /vol/web/media && \
-     chown -R app:app /vol && \
-     chmod -R 755 /vol  && \
-     chmod -R +x /scripts
+# copy project
+COPY ./app /usr/src/app
 
-ENV PATH="/scripts:/py/bin:$PATH"
+# set work directory
+WORKDIR /usr/src/app
 
-USER app 
+# script that checks if db is up, flushes and migrates it
+ENTRYPOINT [ "/usr/src/scripts/run_local.sh" ]
 
-CMD ["run.sh"]
+
 
 
    
